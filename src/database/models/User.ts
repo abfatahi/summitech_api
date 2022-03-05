@@ -2,12 +2,6 @@ import mongoose from 'mongoose';
 
 const UserSchema = new mongoose.Schema(
   {
-    username: {
-      type: String,
-      trim: true,
-      unique: true,
-      lowercase: true,
-    },
     fullname: {
       type: String,
       trim: true,
@@ -27,7 +21,7 @@ const UserSchema = new mongoose.Schema(
       type: String,
       trim: true,
     },
-    authentication_code: {
+    pincode: {
       type: Number,
       trim: true,
     },

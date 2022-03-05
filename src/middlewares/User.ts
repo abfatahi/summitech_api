@@ -8,13 +8,6 @@ const isUniqueEmail = async (email: any) => {
   return true;
 };
 
-const isUniqueUsername = async (username: any) => {
-  const usernameExist = await UserModel.findOne({ username });
-  if (usernameExist) throw new Error('Failed! Username already in use');
-
-  return true;
-};
-
 const isEmailExist = async (email: any) => {
   const emailExist = await UserModel.findOne({ email });
   if (!emailExist) throw new Error('Failed! User account does not exist');
@@ -40,7 +33,6 @@ const isValidUserToken = async (value: string) => {
 
 export default {
   isUniqueEmail,
-  isUniqueUsername,
   isEmailExist,
   isValidUserToken,
 };
