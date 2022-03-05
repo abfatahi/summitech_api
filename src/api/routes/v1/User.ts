@@ -8,6 +8,29 @@ const UserController = Controller();
 const router = express.Router();
 
 router.post(
+    '/fund-deposit',
+    [
+      header(
+        'Authorization',
+        'Unauthorized! Sign in to your account for authorization'
+      )
+        .exists()
+        .bail()
+        .custom((value: any) => UserMiddleware.isValidUserToken(value)),
+      body('amount', 'Failed! Amount cannot be blank')
+        .exists()
+        .bail()
+        .isNumeric()
+        .withMessage('Failed! Fullname must be a numeric value')
+        .trim(),
+      body('beneficiary', 'Failed! Beneficairy cant be blank')
+        .exists()
+        .custom((beneficiary) => UserMiddleware.isUserExist(beneficiary)),
+    ],
+    UserController.funds_transfer
+  );
+
+router.post(
   '/transfer',
   [
     header(
