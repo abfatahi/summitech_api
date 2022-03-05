@@ -3,7 +3,7 @@ import { body } from 'express-validator';
 import { UserMiddleware } from '../../middlewares';
 import Controller from '../../controllers/Auth';
 
-const UserController = Controller();
+const AuthController = Controller();
 
 const router = express.Router();
 
@@ -42,7 +42,7 @@ router.post(
       .isLength({ min: 10, max: 15 })
       .withMessage('Phone number should have 10 to 15 characters'),
   ],
-  UserController.register
+  AuthController.register
 );
 
 router.post(
@@ -61,7 +61,7 @@ router.post(
       .isEmpty()
       .withMessage('Password cant be empty'),
   ],
-  UserController.login
+  AuthController.login
 );
 
 export default router;
