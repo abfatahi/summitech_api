@@ -2,10 +2,9 @@ import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import { validationResult } from 'express-validator';
 import { UserModel } from '../../database/models';
-import { Request } from 'express-validator/src/base';
 
 export default () => {
-  const register = async (req: Request, res: any) => {
+  const register = async (req: any, res: any) => {
     try {
       const errors = validationResult(req);
       if (!errors.isEmpty())
@@ -41,7 +40,7 @@ export default () => {
     }
   };
 
-  const login = async (req: Request, res: any) => {
+  const login = async (req: any, res: any) => {
     try {
       // Error Validation
       const errors = validationResult(req);
@@ -77,7 +76,10 @@ export default () => {
         data: {
           fullname: User.fullname,
           email,
-          phoneNumber: User.phone_number,
+          phone_number: User.phone_number,
+          wallet_balance: User.wallet_balance,
+          role: User.role,
+          is_active: User.is_active,
         },
         token,
       });

@@ -25,6 +25,15 @@ const UserSchema = new mongoose.Schema(
       type: Number,
       trim: true,
     },
+    role: {
+      type: String,
+      default: 'user',
+    },
+    wallet_balance: {
+      type: Number,
+      min: 0,
+      default: 0,
+    },
     is_active: {
       type: Boolean,
       default: true,
