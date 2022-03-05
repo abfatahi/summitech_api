@@ -4,7 +4,7 @@ import express from 'express';
 import rateLimit from 'express-rate-limit';
 import helmet from 'helmet';
 // import ApiVersions from '../api/index.js';
-import ApiRoutes from '../routes/index';
+import ApiRoutes from '../api/routes/v1/index';
 // import { ErrorMiddleware } from '../middlewares/index';
 import { Database } from '../database/index';
 

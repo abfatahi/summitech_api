@@ -1,7 +1,7 @@
 import express from 'express';
 import { body } from 'express-validator';
-import { UserMiddleware } from '../middlewares';
-import Controller from '../controllers/Auth';
+import { UserMiddleware } from '../../middlewares';
+import Controller from '../../controllers/Auth';
 
 const UserController = Controller();
 
