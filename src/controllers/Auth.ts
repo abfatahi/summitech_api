@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
-import { ValidationError, validationResult } from 'express-validator';
+import { validationResult } from 'express-validator';
 import { UserModel } from '../database/models';
 import { Request } from 'express-validator/src/base';
 
@@ -34,12 +34,57 @@ export default () => {
 
       return res.status(200).json({
         message: 'success',
-        User: { fullname, email, phone_number },
+        data: { fullname, email, phone_number },
       });
     } catch (error) {
       return res.status(500).json({ message: 'Internal Server Error' });
     }
   };
 
-  return { register };
+  const login = async (req: Request, res: any) => {
+    try {
+      // Error Validation
+      const errors = validationResult(req);
+      if (!errors.isEmpty())
+        return res.status(400).json({ errors: errors.array() });
+
+      // Authentication Logic
+      const { email, password } = req.body;
+      const User = await UserModel.findOne({ email });
+      if (!User)
+        return res
+          .status(400)
+          .json({ errors: [{ message: 'Failed! Invalid login details' }] });
+
+      // compare password
+      const isValidPassword = await bcrypt.compare(password, User.password);
+      if (!isValidPassword)
+        return res
+          .status(400)
+          .json({ errors: [{ message: 'Failed! Incorrect password' }] });
+
+      // Generate customer token
+      const token = jwt.sign(
+        { email: User.email },
+        `${process.env.JWT_SECRET}`,
+        {
+          expiresIn: '10d',
+        }
+      );
+
+      return res.status(200).json({
+        message: 'success',
+        data: {
+          fullname: User.fullname,
+          email,
+          phoneNumber: User.phone_number,
+        },
+        token,
+      });
+    } catch (error) {
+      return res.status(500).json({ message: 'Internal Server Error' });
+    }
+  };
+
+  return { register, login };
 };
