@@ -6,18 +6,22 @@ const TransactionSchema = new mongoose.Schema(
       type: Number,
     },
     beneficiary: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'UserModel',
+      type: Number,
     },
     sender: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'UserModel',
+      type: Number,
     },
     narration: {
       type: String,
     },
     type: {
       type: String,
+    },
+    depositReference: {
+      type: String,
+    },
+    depositReferenceStatus: {
+      type: Boolean,
     },
   },
   { timestamps: true }

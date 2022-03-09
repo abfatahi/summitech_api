@@ -17,23 +17,43 @@ export default () => {
         `${process.env.JWT_SECRET}`
       );
 
+      //Get User credentials
+      const User = await UserModel.findOne({
+        email: (tokenData as TokenData).email,
+      });
+
       // Configure Axios Request
       const body = {
         email: (tokenData as TokenData).email,
         amount: parseFloat(req.body.amount) * 100,
       };
 
-      const initializeFundWallet = await axios
-        .post(`https://api.paystack.co/transaction/initialize`, body, {
+      const initializeFundWallet = await axios.post(
+        `https://api.paystack.co/transaction/initialize`,
+        body,
+        {
           headers: {
             Authorization: `Bearer ${process.env.PAYSTACK_KEY}`,
           },
-        })
+        }
+      );
       const { status, data, message } = initializeFundWallet.data;
       if (status === false) {
         return res.status(400).json({ message });
       }
+
       if (status === true) {
+        //Create new transaction
+        const newTransaction = new TransactionModel({
+          amount: req.body.amount,
+          beneficiary: User.account_number,
+          narration: 'Funds deposit by Self (Paystack)',
+          type: 'Deposit',
+          depositReference: data.reference,
+          depositReferenceStatus: false,
+        });
+        newTransaction.save();
+
         return res.status(200).json({
           message: 'success',
           data,
@@ -72,13 +92,37 @@ export default () => {
         }
       );
       const { amount, gateway_response } = verifyPayment.data.data;
-
       if (gateway_response !== 'Successful') {
-        res.status(422).json({ message: 'Something went wrong' });
+        res.status(422).json({ message: 'Deposit failed!' });
       }
 
-      if (gateway_response === 'Successful') {
-        const newUserBalance = parseFloat(User.wallet_balance) + amount;
+      const Transaction = await TransactionModel.findOne({
+        depositReference: req.params.reference,
+      });
+
+      //Check if reference has been used previously
+      if (
+        gateway_response === 'Successful' &&
+        Transaction.depositReferenceStatus === true
+      ) {
+        return res.status(400).json({
+          message:
+            'Duplicate Transaction! This transaction has already been completed!',
+        });
+      }
+
+      if (
+        gateway_response === 'Successful' &&
+        Transaction.depositReferenceStatus === false
+      ) {
+        //Update paystack reference to used
+        Transaction.depositReferenceStatus = true;
+        Transaction.save();
+
+        //Fund account
+        const transactionAmount = amount / 100;
+        const newUserBalance =
+          parseFloat(User.wallet_balance) + transactionAmount;
         User.wallet_balance = newUserBalance;
         User.save();
 
