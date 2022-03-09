@@ -20,25 +20,13 @@ router.post(
     body('amount', 'Failed! Amount cannot be blank')
       .exists()
       .bail()
-      .isNumeric()
-      .withMessage('Failed! Fullname must be a numeric value')
+      .isFloat({ min: 100 })
+      .withMessage(
+        'Failed! Amount must be a numeric value greater or equal to 100'
+      )
       .trim(),
-    body(
-      'account_number',
-      'Failed! Beneficairy account number must cant be blank'
-    )
-      .exists()
-      .isNumeric()
-      .withMessage(
-        'Failed!  Beneficairy account number must be a numeric value'
-      )
-      .isLength({ min: 10, max: 10 })
-      .withMessage(
-        'Failed!  Beneficairy account number must be a valid 10 digit number'
-      )
-      .custom((account_number) => UserMiddleware.isUserExist(account_number)),
   ],
-  UserController.funds_transfer
+  UserController.fund_wallet
 );
 
 router.get(

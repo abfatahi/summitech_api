@@ -11,18 +11,24 @@ export default () => {
       if (!errors.isEmpty())
         return res.status(400).json({ errors: errors.array() });
 
-      //Destructure Body
-      const { amount, email } = req.body;
-      const newAmount = parseFloat(amount) * 100;
-      const initializeFundWallet = await axios.post(
-        `https://api.paystack.co/transaction/initialize`,
-        {
+      //Extract Email from JWT Token
+      const tokenData = jwt.verify(
+        req.headers.authorization.split(' ')[1],
+        `${process.env.JWT_SECRET}`
+      );
+
+      // Configure Axios Request
+      const body = {
+        email: (tokenData as TokenData).email,
+        amount: parseFloat(req.body.amount) * 100,
+      };
+
+      const initializeFundWallet = await axios
+        .post(`https://api.paystack.co/transaction/initialize`, body, {
           headers: {
             Authorization: `Bearer ${process.env.PAYSTACK_KEY}`,
           },
-          body: JSON.stringify(newAmount, email),
-        }
-      );
+        })
       const { status, data, message } = initializeFundWallet.data;
       if (status === false) {
         return res.status(400).json({ message });
@@ -34,7 +40,7 @@ export default () => {
         });
       }
     } catch (error) {
-      return res.status(500).json({ message: 'Internal Server Error' });
+      return res.status(500).json({ error, message: 'Internal Server Error' });
     }
   };
 
