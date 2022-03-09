@@ -2,6 +2,9 @@ import mongoose from 'mongoose';
 
 const UserSchema = new mongoose.Schema(
   {
+    account_number: {
+      type: Number,
+    },
     fullname: {
       type: String,
       trim: true,

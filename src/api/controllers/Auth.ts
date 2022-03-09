@@ -21,19 +21,25 @@ export default () => {
 
       const { fullname, pin, phone_number } = req.body;
 
+      //Generate New Account Number
+      const getAllAccounts = await UserModel.find();
+      const account_number = 1340000000 + getAllAccounts.length++;
+
+      //Create new user
       const new_user = new UserModel({
         fullname,
         email,
         password,
         phone_number,
         pin,
+        account_number,
       });
 
       new_user.save();
 
       return res.status(200).json({
         message: 'success',
-        data: { fullname, email, phone_number },
+        data: { fullname, email, phone_number, account_number },
       });
     } catch (error) {
       return res.status(500).json({ message: 'Internal Server Error' });
@@ -50,6 +56,9 @@ export default () => {
       // Authentication Logic
       const { email, password } = req.body;
       const User = await UserModel.findOne({ email });
+      // .select(
+      //   'fullname email account_number phone_number wallet_balance role'
+      // );
       if (!User)
         return res
           .status(400)
@@ -74,6 +83,7 @@ export default () => {
       return res.status(200).json({
         message: 'success',
         data: {
+          account_number: User.account_number,
           fullname: User.fullname,
           email,
           phone_number: User.phone_number,

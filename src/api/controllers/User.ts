@@ -107,7 +107,7 @@ export default () => {
       const Beneficiary = await UserModel.findOne({ _id: beneficiary });
 
       // Check for self transfer
-      if (User.fullname === Beneficiary.fullname)
+      if (User.email === Beneficiary.email)
         return res
           .status(400)
           .json({ message: 'You cannot transfer to yourself' });
