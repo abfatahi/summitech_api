@@ -23,9 +23,20 @@ router.post(
       .isNumeric()
       .withMessage('Failed! Fullname must be a numeric value')
       .trim(),
-    body('beneficiary', 'Failed! Beneficairy cant be blank')
+    body(
+      'account_number',
+      'Failed! Beneficairy account number must cant be blank'
+    )
       .exists()
-      .custom((beneficiary) => UserMiddleware.isUserExist(beneficiary)),
+      .isNumeric()
+      .withMessage(
+        'Failed!  Beneficairy account number must be a numeric value'
+      )
+      .isLength({ min: 10, max: 10 })
+      .withMessage(
+        'Failed!  Beneficairy account number must be a valid 10 digit number'
+      )
+      .custom((account_number) => UserMiddleware.isUserExist(account_number)),
   ],
   UserController.funds_transfer
 );
@@ -59,11 +70,22 @@ router.post(
       .exists()
       .bail()
       .isNumeric()
-      .withMessage('Failed! Fullname must be a numeric value')
+      .withMessage('Failed! Amount must be a numeric value')
       .trim(),
-    body('beneficiary', 'Failed! Beneficairy cant be blank')
+    body(
+      'account_number',
+      'Failed! Beneficairy account number must cant be blank'
+    )
       .exists()
-      .custom((beneficiary) => UserMiddleware.isUserExist(beneficiary)),
+      .isNumeric()
+      .withMessage(
+        'Failed!  Beneficairy account number must be a numeric value'
+      )
+      .isLength({ min: 10, max: 10 })
+      .withMessage(
+        'Failed!  Beneficairy account number must be a valid 10 digit number'
+      )
+      .custom((account_number) => UserMiddleware.isUserExist(account_number)),
   ],
   UserController.funds_transfer
 );

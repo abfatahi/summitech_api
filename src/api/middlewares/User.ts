@@ -15,8 +15,8 @@ const isEmailExist = async (email: any) => {
   return true;
 };
 
-const isUserExist = async (_id: any) => {
-  const userExist = await UserModel.findOne({ _id });
+const isUserExist = async (account_number: any) => {
+  const userExist = await UserModel.findOne({ account_number });
   if (!userExist) throw new Error('Failed! User account does not exist');
 
   return true;

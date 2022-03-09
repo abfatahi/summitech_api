@@ -93,7 +93,7 @@ export default () => {
         return res.status(400).json({ errors: errors.array() });
 
       //Destructure Body
-      const { amount, beneficiary, narration } = req.body;
+      const { amount, account_number, narration } = req.body;
 
       const tokenData = jwt.verify(
         req.headers.authorization.split(' ')[1],
@@ -104,10 +104,10 @@ export default () => {
         email: (tokenData as TokenData).email,
       });
 
-      const Beneficiary = await UserModel.findOne({ _id: beneficiary });
+      const Beneficiary = await UserModel.findOne({ account_number });
 
       // Check for self transfer
-      if (User.email === Beneficiary.email)
+      if (User.account_number === Beneficiary.account_number)
         return res
           .status(400)
           .json({ message: 'You cannot transfer to yourself' });
@@ -137,8 +137,8 @@ export default () => {
       //Create new transaction
       const newTransaction = new TransactionModel({
         amount,
-        beneficiary,
-        sender: User._id,
+        beneficiary: Beneficiary.account_number,
+        sender: User.account_number,
         narration,
         type: 'Transfer',
       });
